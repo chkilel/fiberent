@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/chkilel/fiberent/ent/pet"
 	"github.com/chkilel/fiberent/ent/schema"
 	"github.com/chkilel/fiberent/ent/user"
 	"github.com/google/uuid"
@@ -14,6 +15,24 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	petFields := schema.Pet{}.Fields()
+	_ = petFields
+	// petDescName is the schema descriptor for name field.
+	petDescName := petFields[0].Descriptor()
+	// pet.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	pet.NameValidator = petDescName.Validators[0].(func(string) error)
+	// petDescAge is the schema descriptor for age field.
+	petDescAge := petFields[1].Descriptor()
+	// pet.AgeValidator is a validator for the "age" field. It is called by the builders before save.
+	pet.AgeValidator = petDescAge.Validators[0].(func(int) error)
+	// petDescCreatedAt is the schema descriptor for created_at field.
+	petDescCreatedAt := petFields[2].Descriptor()
+	// pet.DefaultCreatedAt holds the default value on creation for the created_at field.
+	pet.DefaultCreatedAt = petDescCreatedAt.Default.(time.Time)
+	// petDescUpdatedAt is the schema descriptor for updated_at field.
+	petDescUpdatedAt := petFields[3].Descriptor()
+	// pet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	pet.UpdateDefaultUpdatedAt = petDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescFirstName is the schema descriptor for first_name field.
