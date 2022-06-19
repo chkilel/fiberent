@@ -18,21 +18,25 @@ func init() {
 	petFields := schema.Pet{}.Fields()
 	_ = petFields
 	// petDescName is the schema descriptor for name field.
-	petDescName := petFields[0].Descriptor()
+	petDescName := petFields[1].Descriptor()
 	// pet.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	pet.NameValidator = petDescName.Validators[0].(func(string) error)
 	// petDescAge is the schema descriptor for age field.
-	petDescAge := petFields[1].Descriptor()
+	petDescAge := petFields[2].Descriptor()
 	// pet.AgeValidator is a validator for the "age" field. It is called by the builders before save.
 	pet.AgeValidator = petDescAge.Validators[0].(func(int) error)
 	// petDescCreatedAt is the schema descriptor for created_at field.
-	petDescCreatedAt := petFields[2].Descriptor()
+	petDescCreatedAt := petFields[3].Descriptor()
 	// pet.DefaultCreatedAt holds the default value on creation for the created_at field.
 	pet.DefaultCreatedAt = petDescCreatedAt.Default.(time.Time)
 	// petDescUpdatedAt is the schema descriptor for updated_at field.
-	petDescUpdatedAt := petFields[3].Descriptor()
+	petDescUpdatedAt := petFields[4].Descriptor()
 	// pet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	pet.UpdateDefaultUpdatedAt = petDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// petDescID is the schema descriptor for id field.
+	petDescID := petFields[0].Descriptor()
+	// pet.DefaultID holds the default value on creation for the id field.
+	pet.DefaultID = petDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescFirstName is the schema descriptor for first_name field.

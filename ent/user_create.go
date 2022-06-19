@@ -100,14 +100,14 @@ func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (uc *UserCreate) AddPetIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddPetIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddPetIDs(ids...)
 	return uc
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (uc *UserCreate) AddPets(p ...*Pet) *UserCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -332,7 +332,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},

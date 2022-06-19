@@ -4,13 +4,15 @@ package pet
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
 	// Label holds the string label denoting the pet type in the database.
 	Label = "pet"
 	// FieldID holds the string denoting the id field in the database.
-	FieldID = "id"
+	FieldID = "oid"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldAge holds the string denoting the age field in the database.
@@ -21,8 +23,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
 	EdgeOwner = "owner"
-	// UserFieldID holds the string denoting the ID field of the User.
-	UserFieldID = "oid"
 	// Table holds the table name of the pet in the database.
 	Table = "pets"
 	// OwnerTable is the table that holds the owner relation/edge.
@@ -73,4 +73,6 @@ var (
 	DefaultCreatedAt time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )

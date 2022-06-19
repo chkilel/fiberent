@@ -737,7 +737,7 @@ func HasPets() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PetsTable, PetFieldID),
+			sqlgraph.To(PetsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, PetsTable, PetsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -749,7 +749,7 @@ func HasPetsWith(preds ...predicate.Pet) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PetsInverseTable, PetFieldID),
+			sqlgraph.To(PetsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, PetsTable, PetsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

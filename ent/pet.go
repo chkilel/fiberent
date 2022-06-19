@@ -17,7 +17,7 @@ import (
 type Pet struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Age holds the value of the "age" field.
@@ -60,12 +60,14 @@ func (*Pet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case pet.FieldID, pet.FieldAge:
+		case pet.FieldAge:
 			values[i] = new(sql.NullInt64)
 		case pet.FieldName:
 			values[i] = new(sql.NullString)
 		case pet.FieldCreatedAt, pet.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case pet.FieldID:
+			values[i] = new(uuid.UUID)
 		case pet.ForeignKeys[0]: // user_pets
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
@@ -84,11 +86,11 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case pet.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				pe.ID = *value
 			}
-			pe.ID = int(value.Int64)
 		case pet.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])

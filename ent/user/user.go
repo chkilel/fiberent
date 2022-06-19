@@ -27,8 +27,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgePets holds the string denoting the pets edge name in mutations.
 	EdgePets = "pets"
-	// PetFieldID holds the string denoting the ID field of the Pet.
-	PetFieldID = "id"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// PetsTable is the table that holds the pets relation/edge.

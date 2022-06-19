@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -53,6 +54,20 @@ func (pc *PetCreate) SetNillableCreatedAt(t *time.Time) *PetCreate {
 // SetUpdatedAt sets the "updated_at" field.
 func (pc *PetCreate) SetUpdatedAt(t time.Time) *PetCreate {
 	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetID sets the "id" field.
+func (pc *PetCreate) SetID(u uuid.UUID) *PetCreate {
+	pc.mutation.SetID(u)
+	return pc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (pc *PetCreate) SetNillableID(u *uuid.UUID) *PetCreate {
+	if u != nil {
+		pc.SetID(*u)
+	}
 	return pc
 }
 
@@ -150,6 +165,10 @@ func (pc *PetCreate) defaults() {
 		v := pet.DefaultCreatedAt
 		pc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := pc.mutation.ID(); !ok {
+		v := pet.DefaultID()
+		pc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -187,8 +206,13 @@ func (pc *PetCreate) sqlSave(ctx context.Context) (*Pet, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -198,12 +222,16 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: pet.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: pet.FieldID,
 			},
 		}
 	)
 	_spec.OnConflict = pc.conflict
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -364,17 +392,25 @@ func (u *PetUpsert) UpdateUpdatedAt() *PetUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Pet.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(pet.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *PetUpsertOne) UpdateNewValues() *PetUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(pet.FieldID)
+		}
+	}))
 	return u
 }
 
@@ -485,7 +521,12 @@ func (u *PetUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PetUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *PetUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: PetUpsertOne.ID is not supported by MySQL driver. Use PetUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -494,7 +535,7 @@ func (u *PetUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PetUpsertOne) IDX(ctx context.Context) int {
+func (u *PetUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -546,10 +587,6 @@ func (pcb *PetCreateBulk) Save(ctx context.Context) ([]*Pet, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -637,11 +674,22 @@ type PetUpsertBulk struct {
 //	client.Pet.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(pet.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *PetUpsertBulk) UpdateNewValues() *PetUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(pet.FieldID)
+				return
+			}
+		}
+	}))
 	return u
 }
 

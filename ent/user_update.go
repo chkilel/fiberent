@@ -14,6 +14,7 @@ import (
 	"github.com/chkilel/fiberent/ent/pet"
 	"github.com/chkilel/fiberent/ent/predicate"
 	"github.com/chkilel/fiberent/ent/user"
+	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -82,14 +83,14 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (uu *UserUpdate) AddPetIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddPetIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddPetIDs(ids...)
 	return uu
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (uu *UserUpdate) AddPets(p ...*Pet) *UserUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -108,14 +109,14 @@ func (uu *UserUpdate) ClearPets() *UserUpdate {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (uu *UserUpdate) RemovePetIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemovePetIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemovePetIDs(ids...)
 	return uu
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (uu *UserUpdate) RemovePets(p ...*Pet) *UserUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -280,7 +281,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},
@@ -296,7 +297,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},
@@ -315,7 +316,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},
@@ -397,14 +398,14 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (uuo *UserUpdateOne) AddPetIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddPetIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddPetIDs(ids...)
 	return uuo
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (uuo *UserUpdateOne) AddPets(p ...*Pet) *UserUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -423,14 +424,14 @@ func (uuo *UserUpdateOne) ClearPets() *UserUpdateOne {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (uuo *UserUpdateOne) RemovePetIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemovePetIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemovePetIDs(ids...)
 	return uuo
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (uuo *UserUpdateOne) RemovePets(p ...*Pet) *UserUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -619,7 +620,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},
@@ -635,7 +636,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},
@@ -654,7 +655,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: pet.FieldID,
 				},
 			},

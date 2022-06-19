@@ -189,7 +189,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   pet.Table,
 			Columns: pet.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: pet.FieldID,
 			},
 		},
@@ -456,7 +456,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Table:   pet.Table,
 			Columns: pet.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: pet.FieldID,
 			},
 		},

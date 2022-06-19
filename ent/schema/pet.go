@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // Pet holds the schema definition for the Pet entity.
@@ -16,6 +17,7 @@ type Pet struct {
 // Fields of the Pet.
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).Default(uuid.New).StorageKey("oid"),
 		field.String("name").NotEmpty(),
 		field.Int("age").Positive(),
 		field.Time("created_at").Default(time.Now()),
