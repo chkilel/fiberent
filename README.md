@@ -1,4 +1,9 @@
-# Clean Architecture in Go 🎉
+# FiberEnt | *Clean Architecture in Go* 🎉
+
+<p align='center'>
+  <img src='https://res.cloudinary.com/chkilel/image/upload/v1655654392/fiberent/fiberent-preview_lp0p4b.png' alt='FiberEnt' width='60%'/>
+</p>
+
 
  FiberEnt is a clean architecture implementation in Go with the following frameworks:
 - [Fiber](https://github.com/gofiber/fiber) 🚀 is an Express inspired web framework built on top of Fasthttp, the fastest HTTP engine for Go.
