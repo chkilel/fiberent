@@ -57,6 +57,14 @@ func (pc *PetCreate) SetUpdatedAt(t time.Time) *PetCreate {
 	return pc
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PetCreate) SetNillableUpdatedAt(t *time.Time) *PetCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PetCreate) SetID(u uuid.UUID) *PetCreate {
 	pc.mutation.SetID(u)
@@ -162,8 +170,12 @@ func (pc *PetCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (pc *PetCreate) defaults() {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		v := pet.DefaultCreatedAt
+		v := pet.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := pet.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := pet.DefaultID()

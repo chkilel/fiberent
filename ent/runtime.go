@@ -28,9 +28,11 @@ func init() {
 	// petDescCreatedAt is the schema descriptor for created_at field.
 	petDescCreatedAt := petFields[3].Descriptor()
 	// pet.DefaultCreatedAt holds the default value on creation for the created_at field.
-	pet.DefaultCreatedAt = petDescCreatedAt.Default.(time.Time)
+	pet.DefaultCreatedAt = petDescCreatedAt.Default.(func() time.Time)
 	// petDescUpdatedAt is the schema descriptor for updated_at field.
 	petDescUpdatedAt := petFields[4].Descriptor()
+	// pet.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	pet.DefaultUpdatedAt = petDescUpdatedAt.Default.(func() time.Time)
 	// pet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	pet.UpdateDefaultUpdatedAt = petDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// petDescID is the schema descriptor for id field.

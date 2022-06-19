@@ -20,8 +20,8 @@ func (Pet) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New).StorageKey("oid"),
 		field.String("name").NotEmpty(),
 		field.Int("age").Positive(),
-		field.Time("created_at").Default(time.Now()),
-		field.Time("updated_at").UpdateDefault(time.Now()),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 
