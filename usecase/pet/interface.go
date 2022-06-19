@@ -28,10 +28,10 @@ type Repository interface {
 
 // UseCase interface
 type UseCase interface {
-	GetPet(ctx context.Context, id *entity.ID) (*entity.Pet, error)
-	SearchPets(ctx context.Context, query string) ([]*entity.Pet, error)
-	ListPets(ctx context.Context) ([]*entity.Pet, error)
 	CreatePet(ctx context.Context, name string, age int) (*entity.Pet, error)
+	GetPet(ctx context.Context, id *entity.ID) (*entity.Pet, error)
 	UpdatePet(ctx context.Context, e *entity.Pet) (*entity.Pet, error)
 	DeletePet(ctx context.Context, id *entity.ID) error
+	SearchPets(ctx context.Context, query string) ([]*entity.Pet, error)
+	ListPets(ctx context.Context) ([]*entity.Pet, error)
 }
