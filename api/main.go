@@ -10,6 +10,7 @@ import (
 	"github.com/chkilel/fiberent/infrastructure/ent/datastore"
 	"github.com/chkilel/fiberent/infrastructure/ent/repository"
 	"github.com/chkilel/fiberent/pkg/config"
+	"github.com/chkilel/fiberent/usecase/pet"
 	"github.com/chkilel/fiberent/usecase/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -55,14 +56,17 @@ func main() {
 
 	// Create repositories.
 	userRepository := repository.NewUserRepoEnt(client)
+	petRepository := repository.NewPetRepoEnt(client)
 
 	// Create all of our services.
 	userService := user.NewService(userRepository)
+	petService := pet.NewService(petRepository)
 
 	api := app.Group("/api")
 
 	// Prepare our endpoints for the API.
 	handler.NewUserHandler(api.Group("/v1/users"), context.Background(), userService)
+	handler.NewPetHandler(api.Group("/v1/pets"), context.Background(), petService)
 
 	// Prepare an endpoint for 'Not Found'.
 	app.All("*", func(c *fiber.Ctx) error {
