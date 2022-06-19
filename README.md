@@ -28,7 +28,7 @@ then migrate database
 
 # Steps to create a new entity
 
-Install ent entity framework, check [https://entgo.io/docs/getting-started#installation](https://entgo.io/docs/getting-started#installation) for more information.
+Install **Ent** entity framework, check out [https://entgo.io/docs/getting-started#installation](https://entgo.io/docs/getting-started#installation) for more information.
 
 > **In the following example, we will create a new entity called `User`.**
 
@@ -43,25 +43,27 @@ Install ent entity framework, check [https://entgo.io/docs/getting-started#insta
    - add your fields to the User schema, check **[Ent Field creation](https://entgo.io/docs/schema-fields)** for more information.
    - add your edges to the User schema, check **[Ent Edges creation](https://entgo.io/docs/schema-edges)** for more information.
 
-3. Run go generate from the root directory of the project.
+3. Run go generate from the the project root directory.
 
-     ```bash presenter to the `presenter` folder, `user.go` file.
+     ```bash
      go generate ./ent
      ```
 
-4. Create `user entity` in the `<project>/entity` directory, `user.go` file
+4. Create `user entity` file `<project>/entity/user.go`.
 
 5. Define the `user` repository (Reader and Writer) Interface and the usecase (service) Interface in the `<project>/usecase/user` folder
 
-6. Create the User **service** in the `<project>/usecase/user` folder, `service.go` file that implements the `Usecase` interface.
+6. Create the User **service** Implementation of the `Usecase` interface in the `<project>/usecase/user/service.go`.
 
-7. Create the User **repository** implementation in the `<project>/infrastructure/ent/repository/user_ent.go` that implements the `Repository` interface.
+7. Create the User **repository** implementation of the `Repository` interface in the `<project>/infrastructure/ent/repository/user_ent.go`.
 
-8. Add the handlers to the `<project>/api/handler` folder, `user.go` file, and the presenter to the `<project>/api/presenter` folder, `user.go` file.
+8. Add the handler `<project>/api/handler/user.go` and the presenter `<project>/api/presenter/user.go` files.
+
+9. Update `<project>/api/main.go` file with the new endpoint.
 
 ## API requests
 
-### Add user
+### Add a user
 
 ```
 curl -X "POST" "http://localhost:3030/api/v1/users" \
@@ -74,7 +76,7 @@ curl -X "POST" "http://localhost:3030/api/v1/users" \
           "password": "password"
           }'
 ```
-### Update user
+### Update a user
 
 ```
 curl -X "POST" "http://localhost:3030/api/v1/users/[USER_ID]" \
