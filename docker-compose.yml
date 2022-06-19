@@ -1,14 +1,14 @@
 version: "3.1"
 
 services:
-  live-reload-air:
-    image: cosmtrek/air
-    # working_dir value has to be the same of mapped volume
-    working_dir: /project-package
-    ports:
-      - 3030:3030
-    volumes:
-      - ./:/project-package/
+  # live-reload-air:
+  #   image: cosmtrek/air
+  #   # working_dir value has to be the same of mapped volume
+  #   working_dir: /project-package
+  #   ports:
+  #     - 3030:3030
+  #   volumes:
+  #     - ./:/project-package/
   postgres:
     image: postgres:14.2-alpine
     container_name: postgres-fiberent
