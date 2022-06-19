@@ -5,23 +5,23 @@ import (
 
 	"github.com/chkilel/fiberent/api/presenter"
 	"github.com/chkilel/fiberent/entity"
-	"github.com/chkilel/fiberent/usecase/user"
+	"github.com/chkilel/fiberent/usecase/pet"
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewUserHandler(app fiber.Router, ctx context.Context, service user.UseCase) {
-	app.Post("/", createUser(ctx, service))
-	app.Get("/", listUsers(ctx, service))
-	app.Get("/:userId", getUser(ctx, service))
-	app.Post("/:userId", updateUser(ctx, service))
-	app.Delete("/:userId", deleteUser(ctx, service))
+func NewPetHandler(app fiber.Router, ctx context.Context, service pet.UseCase) {
+	app.Post("/", createPet(ctx, service))
+	app.Get("/", listPets(ctx, service))
+	app.Get("/:petId", getPet(ctx, service))
+	app.Post("/:petId", updatePet(ctx, service))
+	app.Delete("/:petId", deletePet(ctx, service))
 }
 
-func createUser(ctx context.Context, service user.UseCase) fiber.Handler {
+func createPet(ctx context.Context, service pet.UseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		var user *entity.User
-		err := c.BodyParser(&user)
+		var pet *entity.Pet
+		err := c.BodyParser(&pet)
 
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
@@ -30,7 +30,7 @@ func createUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		user, err = service.CreateUser(ctx, user.Email, user.Password, user.FirstName, user.LastName)
+		pet, err = service.CreatePet(ctx, pet.Name, pet.Age)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status":       "error",
@@ -39,11 +39,10 @@ func createUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		toJ := presenter.User{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
+		toJ := presenter.Pet{
+			ID:   pet.ID,
+			Name: pet.Name,
+			Age:  pet.Age,
 		}
 
 		return c.JSON(&fiber.Map{
@@ -54,9 +53,9 @@ func createUser(ctx context.Context, service user.UseCase) fiber.Handler {
 	}
 }
 
-func getUser(ctx context.Context, service user.UseCase) fiber.Handler {
+func getPet(ctx context.Context, service pet.UseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := entity.StringToID(c.Params("userId"))
+		id, err := entity.StringToID(c.Params("petId"))
 
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
@@ -64,7 +63,7 @@ func getUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		user, err := service.GetUser(ctx, &id)
+		pet, err := service.GetPet(ctx, &id)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status":       "error",
@@ -73,24 +72,23 @@ func getUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		toJ := presenter.User{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
+		toJ := presenter.Pet{
+			ID:   pet.ID,
+			Name: pet.Name,
+			Age:  pet.Age,
 		}
 		return c.JSON(fiber.Map{
 			"status":  "success",
-			"message": "User Found",
+			"message": "Pet Found",
 			"data":    toJ,
 		})
 	}
 }
 
-func updateUser(ctx context.Context, service user.UseCase) fiber.Handler {
+func updatePet(ctx context.Context, service pet.UseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		id, err := entity.StringToID(c.Params("userId"))
+		id, err := entity.StringToID(c.Params("petId"))
 
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
@@ -98,9 +96,9 @@ func updateUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		var user *entity.User
+		var pet *entity.Pet
 
-		err = c.BodyParser(&user)
+		err = c.BodyParser(&pet)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status": "error",
@@ -108,9 +106,9 @@ func updateUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		user.ID = id
-		user, err = service.UpdateUser(ctx, user)
+		pet.ID = id
 
+		pet, err = service.UpdatePet(ctx, pet)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status":       "error",
@@ -119,11 +117,10 @@ func updateUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		toJ := presenter.User{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
+		toJ := presenter.Pet{
+			ID:   pet.ID,
+			Name: pet.Name,
+			Age:  pet.Age,
 		}
 
 		return c.JSON(&fiber.Map{
@@ -134,10 +131,10 @@ func updateUser(ctx context.Context, service user.UseCase) fiber.Handler {
 	}
 }
 
-func deleteUser(ctx context.Context, service user.UseCase) fiber.Handler {
+func deletePet(ctx context.Context, service pet.UseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		id, err := entity.StringToID(c.Params("userId"))
+		id, err := entity.StringToID(c.Params("petId"))
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status":       "Bad Id Format",
@@ -146,25 +143,25 @@ func deleteUser(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		err = service.DeleteUser(ctx, &id)
+		err = service.DeletePet(ctx, &id)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
-				"status":       "error deleting user",
+				"status":       "error deleting pet",
 				"error_detail": err,
 				"error":        err.Error(),
 			})
 		}
 
 		return c.JSON(&fiber.Map{
-			"status": "user deleted successfully",
+			"status": "pet deleted successfully",
 			"error":  nil,
 		})
 	}
 }
 
-func listUsers(ctx context.Context, service user.UseCase) fiber.Handler {
+func listPets(ctx context.Context, service pet.UseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		users, err := service.ListUsers(ctx)
+		users, err := service.ListPets(ctx)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 				"status":       "error",
@@ -173,20 +170,19 @@ func listUsers(ctx context.Context, service user.UseCase) fiber.Handler {
 			})
 		}
 
-		toJ := make([]presenter.User, len(users))
+		toJ := make([]presenter.Pet, len(users))
 
-		for i, user := range users {
-			toJ[i] = presenter.User{
-				ID:        user.ID,
-				Email:     user.Email,
-				FirstName: user.FirstName,
-				LastName:  user.LastName,
+		for i, pet := range users {
+			toJ[i] = presenter.Pet{
+				ID:   pet.ID,
+				Name: pet.Name,
+				Age:  pet.Age,
 			}
 		}
 
 		return c.JSON(fiber.Map{
 			"status":  "success",
-			"message": "Users Found",
+			"message": "Pets Found",
 			"data":    toJ,
 		})
 	}
