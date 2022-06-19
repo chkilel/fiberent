@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -24,5 +25,9 @@ func (Pet) Fields() []ent.Field {
 
 // Edges of the Pet.
 func (Pet) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("owner", User.Type).
+			Ref("pets").
+			Unique(), // a User entity can have many pets, but a Pet entity can have only one owner.
+	}
 }
