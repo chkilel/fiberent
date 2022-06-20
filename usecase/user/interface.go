@@ -19,6 +19,7 @@ type Writer interface {
 	Create(ctx context.Context, e *entity.User) (*entity.User, error)
 	Update(ctx context.Context, e *entity.User) (*entity.User, error)
 	Delete(ctx context.Context, id *entity.ID) error
+	AddPets(ctx context.Context, userID *entity.ID, petIDs []*entity.ID) error
 }
 
 //Repository interface
@@ -35,4 +36,5 @@ type UseCase interface {
 	CreateUser(ctx context.Context, email, password, firstName, lastName string) (*entity.User, error)
 	UpdateUser(ctx context.Context, e *entity.User) (*entity.User, error)
 	DeleteUser(ctx context.Context, id *entity.ID) error
+	OwnPets(ctx context.Context, userID *entity.ID, petIDs []*entity.ID) error
 }

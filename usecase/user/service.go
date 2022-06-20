@@ -99,3 +99,12 @@ func (s *Service) DeleteUser(ctx context.Context, id *entity.ID) error {
 
 	return s.repo.Delete(ctx, id)
 }
+
+// OwnPets Add pets to user
+func (s *Service) OwnPets(ctx context.Context, userID *entity.ID, petIDs []*entity.ID) error {
+	_, err := s.repo.Get(ctx, userID)
+	if err != nil {
+		return err
+	}
+	return s.repo.AddPets(ctx, userID, petIDs)
+}
