@@ -8,6 +8,7 @@ import (
 	"github.com/chkilel/fiberent/ent/user"
 	"github.com/chkilel/fiberent/entity"
 	usecase "github.com/chkilel/fiberent/usecase/user"
+	"github.com/google/uuid"
 )
 
 //userRepoEnt Ent repo
@@ -137,4 +138,29 @@ func (r *userRepoEnt) Search(ctx context.Context, query string) ([]*entity.User,
 	}
 
 	return users, nil
+}
+
+// AddPets adds pets to a user
+func (r *userRepoEnt) AddPets(ctx context.Context, userID *entity.ID, petIDs []*entity.ID) error {
+
+	ids := make([]uuid.UUID, len(petIDs))
+	for i, id := range petIDs {
+		ids[i] = *id
+	}
+
+	u, err := r.client.User.
+		Query().
+		Where(user.IDEQ(*userID)).
+		Only(ctx)
+	if err != nil {
+		return entity.ErrNotFound
+	}
+
+	// Add the pets to the user
+	_, err = u.Update().AddPetIDs(ids...).Save(ctx)
+	if err != nil {
+		return entity.ErrCannotBeUpdated
+	}
+
+	return nil
 }
