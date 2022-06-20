@@ -15,6 +15,7 @@ func NewUserHandler(app fiber.Router, ctx context.Context, service user.UseCase)
 	app.Get("/:userId", getUser(ctx, service))
 	app.Post("/:userId", updateUser(ctx, service))
 	app.Delete("/:userId", deleteUser(ctx, service))
+	app.Post("/:userId/pets", ownPets(ctx, service))
 }
 
 func createUser(ctx context.Context, service user.UseCase) fiber.Handler {
@@ -188,6 +189,44 @@ func listUsers(ctx context.Context, service user.UseCase) fiber.Handler {
 			"status":  "success",
 			"message": "Users Found",
 			"data":    toJ,
+		})
+	}
+}
+
+func ownPets(ctx context.Context, service user.UseCase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+
+		id, err := entity.StringToID(c.Params("userId"))
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		var petIDs []*entity.ID
+
+		err = c.BodyParser(&petIDs)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+				"status": "error",
+				"error":  err,
+			})
+		}
+
+		err = service.OwnPets(ctx, &id, petIDs)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+				"status":       "error",
+				"error_detail": err,
+				"error":        err.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+			"status": "success",
+			"error":  nil,
 		})
 	}
 }
