@@ -32,7 +32,7 @@ func main() {
 
 	// Creates a new Fiber instance.
 	app := fiber.New(fiber.Config{
-		AppName:      "Fiber Gorm Clean Architecture",
+		AppName:      "Fiber Ent Clean Architecture",
 		ServerHeader: "Fiber",
 	})
 
